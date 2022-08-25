@@ -24,12 +24,7 @@ async fn main() -> Result<(), anyhow::Error> {
     let mut bpf = Bpf::load_file("/home/afredette/bpf/accept-all.o")?;
     let program: &mut SchedClassifier = bpf.program_mut("accept").unwrap().try_into()?;
     program.load()?;
-    program.attach(&opt.iface, TcAttachType::Ingress)?;
-
-    let mut bpf = Bpf::load_file("/home/afredette/bpf/drop-icmp.o")?;
-    let program: &mut SchedClassifier = bpf.program_mut("drop_icmp").unwrap().try_into()?;
-    program.load()?;
-    program.attach(&opt.iface, TcAttachType::Ingress)?;
+    program.attach(&opt.iface, TcAttachType::Ingress, 50)?;
 
     println!("Waiting for Ctrl-C...");
     signal::ctrl_c().await?;
